@@ -32,3 +32,30 @@ def post_tasks():
     except Exception as e:
         print(f"DEBUG: Ocorreu um erro inesperado: {e}")
         return jsonify({"error": "Erro interno do servidor"}), 500
+    
+@task_routes.route('/tasks/<task_id>', methods=['PUT'])
+
+def update_tasks(task_id):
+        try:
+            data = request.json
+            task_update = task_service.update_task_service(task_id, data)
+            return jsonify({
+                "message": "Tarefa atualizada com sucesso!",
+                "task": task_update
+            }), 201
+        except ValueError as e:
+            return jsonify({"error": str(e)}), 400
+
+        except Exception as e:
+            print(f"DEBUG: Ocorreu um erro inesperado: {e}")
+            return jsonify({"error": "Erro interno do servidor"}), 500
+        
+@task_routes.route('/tasks/<task_id>', methods=['DELETE'])
+def delete_task(task_id):
+    try:
+        task_service.delete_task_service(task_id)
+        return jsonify({"message": "Tarefa deletada com sucesso!"}), 200
+    except ValueError as e:
+        return jsonify({"error": str(e)}), 404
+    except Exception as e:
+        return jsonify({"error": "Erro interno do servidor"}), 500
