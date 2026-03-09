@@ -1,5 +1,6 @@
 
 from config.database import tasks_collection
+from bson import ObjectId
 
 
 def list_tasks(status=None):
@@ -16,3 +17,17 @@ def create_task(task_data):
 
 def find_task_by_title(title):
     return tasks_collection.find_one({"title": title})
+
+def update_task(task_id, data):
+    tasks_collection.update_one(
+        {"_id": ObjectId(task_id)},
+        {"$set": data}
+    )
+    return tasks_collection.find_one({"_id": ObjectId(task_id)})
+    
+def delete_task (task_id):
+    result = tasks_collection.delete_one({"_id":ObjectId(task_id)})
+    return result.deleted_count > 0
+
+def get_task_by_id(task_id):
+    return tasks_collection.find_one({"_id": ObjectId(task_id)})
