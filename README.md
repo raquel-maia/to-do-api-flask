@@ -1,90 +1,170 @@
-# To-Do List itaú
+# To-Do List Itaú
 
 API REST para gerenciamento de tarefas desenvolvida como desafio técnico para a vaga de **Analista de Engenharia de TI Júnior**. O foco do projeto é a implementação de um CRUD funcional, seguindo boas práticas de arquitetura, organização de código e integração com banco de dados NoSQL.
 
-## 🚀 Tecnologias
+---
+
+# 🚀 Tecnologias
 
 * **Backend**: Python (Flask)
-
-* **Banco de Dados**: MongoDB Atlas (NoSQL) 
-
+* **Banco de Dados**: MongoDB Atlas (NoSQL)
 * **Arquitetura**: Arquitetura em Camadas (Controller, Service, Repository, Config, Schemas)
 
-## 📋 Funcionalidades
+---
+
+# 📋 Funcionalidades
 
 * **CRUD de Tarefas**: Criação, listagem, busca por ID, atualização e remoção de tarefas.
 
-* **Validações de Negócio**:
+### Validações de Negócio
 
-* Título obrigatório (3-100 caracteres).
+* Título obrigatório (3-100 caracteres)
+* Validação de status (`pending`, `in_progress`, `completed`, `cancelled`)
+* Validação de prioridade (`low`, `medium`, `high`)
+* Data de vencimento validada (não permite datas no passado)
+* Bloqueio de edição para tarefas com status `completed`
 
-* Validação de status (`pending`, `in_progress`, `completed`, `cancelled`).
+---
 
-* Validação de prioridade (`low`, `medium`, `high`).
+# 📂 Estrutura do Projeto
 
-* Data de vencimento validada (não permite datas no passado).
-
-* Bloqueio de edição para tarefas com status `completed`.
-
-## 📂 Estrutura do Projeto
 O projeto foi organizado em uma arquitetura de camadas para garantir a separação de responsabilidades e facilitar a manutenção:
 
-* /config: Contém as configurações globais da aplicação e a lógica de conexão com o banco de dados.
+**/config**  
+Contém as configurações globais da aplicação e a lógica de conexão com o banco de dados.
 
-* /controllers: Atua como a interface da API, responsável por receber as requisições HTTP e retornar as respostas adequadas ao cliente.
+**/controllers**  
+Responsável por receber as requisições HTTP e retornar as respostas da API.
 
-* /repositories: Camada de acesso aos dados, responsável pela interação direta com o MongoDB.
+**/services**  
+Camada que contém as regras de negócio e validações da aplicação.
 
-* /schemas: Define a estrutura dos objetos e a serialização dos dados, garantindo a consistência das informações.
+**/repositories**  
+Responsável pela comunicação direta com o banco de dados (MongoDB).
 
-* /services: Contém as regras de negócio e as validações da aplicação, atuando como o núcleo do sistema.
+**/schemas**  
+Define a estrutura e serialização dos dados retornados pela API.
 
+---
 
-## 🛠️ Configuração e Execução
+# 🔄 Fluxo da Aplicação
 
-### Pré-requisitos
+A requisição percorre diferentes camadas da aplicação até retornar uma resposta ao cliente.
 
-* Python 3.x instalado.
-* Acesso a uma instância do MongoDB (o projeto utiliza **MongoDB Atlas**).
+```
 
-### Instalação
+Cliente (Postman / Frontend)
+│
+▼
+HTTP Request (GET, POST, PUT, DELETE)
+│
+▼
+Controller (Flask Routes)
+Recebe a requisição e extrai os dados
+(request.json / request.args)
+│
+▼
+Service Layer (TaskService)
+Aplica regras de negócio:
 
-1. Clone o repositório:
+* validações
+* regras de status
+* formatação de datas
+* tratamento de erros
+  │
+  ▼
+  Repository Layer
+  Responsável pelo acesso ao banco
+* consultas
+* inserções
+* atualizações
+* remoções
+  │
+  ▼
+  MongoDB (NoSQL)
+  Armazenamento das tarefas
+  │
+  ▼
+  Repository retorna os dados
+  │
+  ▼
+  Service aplica formatação com schemas
+  │
+  ▼
+  Controller retorna JSON
+  (jsonify + status HTTP)
+  │
+  ▼
+  Cliente recebe a resposta da API
+
+````
+
+---
+
+# 🛠️ Configuração e Execução
+
+## Pré-requisitos
+
+* Python 3.x instalado
+* Acesso a uma instância do MongoDB (o projeto utiliza **MongoDB Atlas**)
+
+## Instalação
+
+### 1️⃣ Clone o repositório
+
 ```bash
 git clone <link-do-seu-repo>
 cd <nome-do-projeto>
+````
 
-```
+### 2️⃣ Instale as dependências
 
-2. Instale as dependências:
 ```bash
 pip install -r requirements.txt
-
 ```
 
-3. Configure a conexão com o banco de dados:
-* O projeto está configurado para o **MongoDB Atlas**.
-* Certifique-se de configurar a variável de ambiente `MONGO_URI` com a sua string de conexão.
+### 3️⃣ Configure a conexão com o banco de dados
 
-* Configure o IP da sua máquina no "Network Access" (Whitelist) do seu painel do Atlas.
+O projeto utiliza **MongoDB Atlas**.
 
+Configure a variável de ambiente:
 
-4. Execute a API:
+```
+MONGO_URI=sua_string_de_conexao
+```
+
+Também é necessário adicionar o IP da sua máquina no **Network Access (Whitelist)** no painel do MongoDB Atlas.
+
+### 4️⃣ Execute a aplicação
+
 ```bash
 python app.py
-
 ```
 
-## 🧪 Testes
+---
 
-A API foi validada via Postman. As rotas seguem o padrão RESTful com códigos de resposta HTTP coerentes (200, 201, 400, 404, 500).
+# 🧪 Testes
 
+A API foi validada utilizando **Postman**.
 
-### Notas de Desenvolvimento
+As rotas seguem o padrão **RESTful**, retornando códigos HTTP adequados:
 
-* **Código Limpo**: O projeto foi estruturado para garantir a separação de responsabilidades (camadas Controller, Service e Repository), facilitando a manutenção.
+* **200** – Sucesso
+* **201** – Recurso criado
+* **400** – Erro de validação
+* **404** – Recurso não encontrado
+* **500** – Erro interno do servidor
 
-* **Tratamento de Erros**: Implementado tratamento de exceções para garantir respostas estruturadas ao cliente, evitando erros silenciosos.
+---
 
-Desenvolvido por: Raquel Maia
+# 🧠 Notas de Desenvolvimento
 
+**Arquitetura em Camadas**
+O projeto utiliza separação de responsabilidades entre Controller, Service e Repository para melhorar organização, manutenção e escalabilidade do código.
+
+**Tratamento de Erros**
+Foram implementados tratamentos de exceções para garantir respostas estruturadas e evitar falhas inesperadas na API.
+
+---
+
+Desenvolvido por **Raquel Maia**
