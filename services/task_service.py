@@ -73,6 +73,9 @@ class TaskService:
         if not task_repository.delete_task(task_id):
             raise ValueError("Tarefa não encontrada.")
         return True
+    
+    def count_tasks_by_status(self):
+        return task_repository.count_task_by_status()
 
 
     def _validate_due_date(self, due_date_str):
