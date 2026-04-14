@@ -13,6 +13,11 @@ def get_tasks():
     tasks = task_service.list_all_tasks(status=status_filter)
     return jsonify(tasks), 200
 
+@task_routes.route('/tasks/status/count', methods=['GET'])
+def get_tasks_count_by_status():
+    tasks = task_service.count_tasks_by_status()
+    return jsonify(tasks), 200
+
 
 @task_routes.route('/tasks', methods=['POST'])
 def post_tasks():
@@ -59,3 +64,5 @@ def delete_task(task_id):
         return jsonify({"error": str(e)}), 404
     except Exception as e:
         return jsonify({"error": "Erro interno do servidor"}), 500
+    
+

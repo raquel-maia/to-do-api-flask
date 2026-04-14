@@ -31,3 +31,27 @@ def delete_task (task_id):
 
 def get_task_by_id(task_id):
     return tasks_collection.find_one({"_id": ObjectId(task_id)})
+
+
+def count_task_by_status():
+    
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$status",
+                "count": {"$sum": 1}
+            }
+        },
+        {
+            "$project": {
+                "_id": 0,
+                "status": "$_id",
+                "count": 1
+            }
+        },
+        {
+            "$sort": {"count": -1}
+        }
+    ]
+    
+    return list(tasks_collection.aggregate(pipeline))
